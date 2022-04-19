@@ -2833,14 +2833,18 @@ int AppFrame::OnGlobalKeyDown(wxKeyEvent &event) {
     DemodulatorInstancePtr lastDemod = wxGetApp().getDemodMgr().getCurrentModem();
     
     int snap = wxGetApp().getFrequencySnap();
-    
-    if (event.ControlDown()) {
-        return 1;
+    if (snap == 1) {
+        snap = lastDemod->getBandwidth()/2;
     }
-    
+    if (event.ControlDown()) {
+        //return 1;
+        if (snap != 1) {
+            snap *= 10;
+        }
+    }
     if (event.ShiftDown()) {
         if (snap != 1) {
-            snap /= 2;
+            snap /= 10;
         }
     }
     
@@ -3013,6 +3017,10 @@ int AppFrame::OnGlobalKeyUp(wxKeyEvent &event) {
             demodModeSelector->setSelection("AM");
             return 1;
             break;
+	case 'C':
+            demodModeSelector->setSelection("CW");
+            return 1;
+            break;
         case 'F':
             if (demodModeSelector->getSelectionLabel() == "FM") {
                 demodModeSelector->setSelection("FMS");
@@ -3020,7 +3028,9 @@ int AppFrame::OnGlobalKeyUp(wxKeyEvent &event) {
                 demodModeSelector->setSelection("NBFM");
             } else if (demodModeSelector->getSelectionLabel() == "NBFM") {
                 demodModeSelector->setSelection("FM");
-            }
+            } else {
+                demodModeSelector->setSelection("FM");
+	    }
             return 1;
             break;
         case 'L':
